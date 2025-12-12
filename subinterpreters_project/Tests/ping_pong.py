@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import sys
 import queue
 import threading
@@ -14,16 +13,6 @@ try:
     from concurrent import interpreters
 except ImportError:
     interpreters = None
-
-
-def _parse_pos_int(s: str) -> int:
-    try:
-        n = int(s)
-    except ValueError:
-        raise SystemExit("value must be an integer")
-    if n <= 0:
-        raise SystemExit("value must be positive")
-    return n
 
 
 # threads (noGIL speedup on 3.14t)
