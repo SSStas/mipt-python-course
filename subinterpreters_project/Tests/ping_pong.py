@@ -26,7 +26,7 @@ def thread_worker(q_in, q_out, num_bytes) -> None:
         q_out.put(reply)
 
 
-def make_threads_bench(num_bytes: int) -> Tuple[Callable[[int], None], Callable[[], None]]:
+def make_threads_bench(num_bytes: int) -> Tuple[Callable[[int], float], Callable[[], None]]:
     q_in = queue.Queue()
     q_out = queue.Queue()
 
@@ -61,7 +61,7 @@ def mp_worker(q_in, q_out, num_bytes) -> None:
         q_out.put(reply)
 
 
-def make_mp_bench(num_bytes: int) -> Tuple[Callable[[int], None], Callable[[], None]]:
+def make_mp_bench(num_bytes: int) -> Tuple[Callable[[int], float], Callable[[], None]]:
     ctx = mp.get_context("spawn")
     q_in = ctx.Queue()
     q_out = ctx.Queue()
@@ -82,6 +82,10 @@ def make_mp_bench(num_bytes: int) -> Tuple[Callable[[int], None], Callable[[], N
     def cleanup() -> None:
         q_in.put(None)
         p.join()
+        q_in.close()
+        q_in.join_thread()
+        q_out.close()
+        q_out.join_thread()
 
     return (bench, cleanup)
 
@@ -97,7 +101,7 @@ def subinterp_worker(q_in, q_out, num_bytes) -> None:
         q_out.put(reply)
 
 
-def make_subinterp_bench(num_bytes: int) -> Tuple[Callable[[int], None], Callable[[], None]]:
+def make_subinterp_bench(num_bytes: int) -> Tuple[Callable[[int], float], Callable[[], None]]:
     interp = interpreters.create()
     q_in = interpreters.create_queue()
     q_out = interpreters.create_queue()

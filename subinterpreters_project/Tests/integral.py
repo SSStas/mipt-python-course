@@ -52,7 +52,7 @@ def make_threads_bench(workers: int, a: float, b: float, n: int, I_ref: float) -
         h = (b - a) / n
         chunks = make_chunks(n + 1, workers)
 
-        results = [0.0] * workers
+        results = [None] * workers
         threads = list()
 
         for idx, (i0, i1) in enumerate(chunks):
@@ -99,6 +99,9 @@ def make_mp_bench(workers: int, a: float, b: float, n: int, I_ref: float) -> Cal
         
         for p in procs:
             p.join()
+
+        q_out.close()
+        q_out.join_thread()
         
         I = (h / 2.0) * S
         
